@@ -1,3 +1,4 @@
+
 //код из учебника для работы робота
 var roads = [
   "Alice's House-Bob's House",   "Alice's House-Cabin",
@@ -175,7 +176,8 @@ function bloopRobot({place, parcels}, route) { // места, посылки, м
     if (parcel.place != place) { //если место посылки не местонахождение
       route = parcel.route;// найти путь к посылке 
     } else {
-     /* let parcelsDrop = [];
+      //с этим куском кода надо разобраться, почему не работает как мне хочется
+      let parcelsDrop = [];
       for (let i = 0; i < parcels.length; i++){
         parcelsDrop.push({
           place: parcels[i].place,
@@ -185,50 +187,42 @@ function bloopRobot({place, parcels}, route) { // места, посылки, м
       }
       parcelsDrop.sort((a, b) => a.route.length - b.route.length);
       let drop = parcelsDrop[0];
-      route = drop.route;*/// найти путь к адресату посылки
+      route = drop.route;// найти путь к адресату посылки
     route = findRoute(roadGraph, place, parcel.address);
     }
   }
   return {direction: route[0], memory: route.slice(1)};//удалить адрес из памяти маршрута
 }   
 
-
 //7.3 Постоянная группа
-
-class Group {
-  constructor (){
-    this.group = []
+class PGroup {
+  constructor (group){
+    this.group = group;
   }
   add(arg){//добавляет в нее значение (но только если такого значения там еще нет)
     if (!this.group.includes(arg)){
-     this.group.push(arg);
+      return new PGroup(this.group.concat(arg));
     }
   }
   delete(arg){// удаляет свой аргумент из группы (если таковой там был),
-      this.group = this.group.filter(item => item != arg);
+    return new PGroup(this.group.filter(item => item != arg));
     }
   has(arg){// возвращает логическое значение, указывающее, является ли его аргумент членом группы.
     return this.group.includes(arg);
   }
-  static from(items){
-    let group2 = new Group();
-    for (let i of items) {
-      group2.add(i);
-    }
-    return group2;
+  static empty(){
+    return new PGroup([]);
   }
-  [Symbol.iterator]() {
-    return new GroupIterator(this);
-  };  
 }
 
-let group = Group.from([10, 20]);
-console.log(group.has(10));
+let a = PGroup.empty().add("a");
+let ab = a.add("b");
+let b = ab.delete("a");
+
+console.log(b.has("b"));
 // → true
-console.log(group.has(30));
+console.log(a.has("b"));
 // → false
-group.add(10);
-group.delete(10);
-console.log(group.has(10));
+console.log(b.has("a"));
 // → false
 
